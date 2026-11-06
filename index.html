@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Mini Space Museum AR</title>
+
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
+<script>
+    AFRAME.registerComponent('change-color-on-click', {
+        init: function () {
+            this.el.addEventListener('click', () => {
+                const currentColor = this.el.getAttribute('color');
+
+                if (currentColor === 'red') {
+                    this.el.setAttribute('color', 'blue');
+                } else {
+                    this.el.setAttribute('color', 'red');
+                }
+            });
+        }
+    });
+</script>
+<script>
+    AFRAME.registerComponent('grow-on-click', {
+        init: function () {
+            this.el.addEventListener('click', () => {
+                const currentScale = this.el.getAttribute('scale');
+
+                if (currentScale.x === 1) {
+                    this.el.setAttribute('scale', '1.5 1.5 1.5');
+                } else {
+                    this.el.setAttribute('scale', '1 1 1');
+                }
+            });
+        }
+    });
+</script>
+<script>
+    AFRAME.registerComponent('marker-status', {
+        init: function () {
+
+            const status = document.querySelector('#status');
+
+            this.el.addEventListener('markerFound', function () {
+                status.innerText = 'Marker Found';
+                status.style.backgroundColor = 'green';
+            });
+
+            this.el.addEventListener('markerLost', function () {
+                status.innerText = 'Marker Lost';
+                status.style.backgroundColor = 'red';
+            });
+
+        }
+    });
+</script>
+</head>
+
+<body>
+
+    <h1>Mini Space Museum AR</h1>
+<div id="status"
+     style="position: fixed;
+            top: 10px;
+            left: 10px;
+            padding: 12px;
+            background: red;
+            color: white;
+            z-index: 9999;">
+    Marker Lost
+</div>
+    <a-scene embedded arjs="sourceType: webcam;">
+
+        <!-- Load 3D Model -->
+        <a-assets>
+            <a-asset-item
+                id="rocketModel"
+                src="models/rocket.glb">
+            </a-asset-item>
+        </a-assets>
+
+        <!-- Hiro Marker -->
+       <a-marker preset="hiro" marker-status>
+<a-entity
+    gltf-model="#rocketModel"
+    position="0 0.8 0"
+    scale="0.5 0.5 0.5"
+    rotation="0 180 0">
+</a-entity>
+          
+            <!-- Rocket -->
+<a-entity
+    gltf-model="url(models/rocket.glb)"
+    position="0 0.8 0"
+    scale="0.5 0.5 0.5"
+    rotation="0 180 0">
+</a-entity>
+
+            <!-- Museum Label -->
+            <a-text
+                value="MINI SPACE MUSEUM"
+                position="-1 1.8 0"
+                align="center"
+                color="white"
+                width="4">
+            </a-text>
+
+            <!-- Sun -->
+            <a-sphere
+                position="0 0.8 -1"
+                radius="0.4"
+                color="yellow">
+            </a-sphere>
+
+            <!-- Interactive Ball -->
+<a-sphere
+    id="colorBall"
+    position="1 0.7 0"
+    radius="0.3"
+    color="red"
+    change-color-on-click>
+</a-sphere>
+<!-- Interactive Planet -->
+<a-sphere
+    id="growPlanet"
+    position="1 1.3 0"
+    radius="0.25"
+    color="purple"
+    grow-on-click>
+</a-sphere>
+
+            <!-- Earth -->
+            <a-sphere
+                position="-0.8 0.7 0"
+                radius="0.3"
+                color="blue"
+                animation="property: rotation; to: 0 360 0; loop: true; dur: 3000; easing: linear">
+            </a-sphere>
+
+            <!-- Moon -->
+            <a-sphere
+                position="-0.8 1.2 0"
+                radius="0.12"
+                color="white"
+                animation="property: position; to: -0.8 1.5 0; dir: alternate; loop: true; dur: 1500">
+            </a-sphere>
+
+            <!-- Saturn -->
+            <a-sphere
+                position="0.8 0.8 0"
+                radius="0.35"
+                color="orange">
+            </a-sphere>
+
+            <!-- Saturn Ring -->
+            <a-torus
+                position="0.8 0.8 0"
+                radius="0.5"
+                radius-tubular="0.04"
+                color="white"
+                rotation="90 0 0">
+            </a-torus>
+
+            <!-- Display Stand -->
+            <a-cylinder
+                position="0 0.2 0.8"
+                radius="0.5"
+                height="0.3"
+                color="gray">
+            </a-cylinder>
+
+        </a-marker>
+
+       <!-- Camera with Touch Support -->
+<a-entity camera>
+    <a-entity
+        cursor="rayOrigin: mouse"
+        raycaster="objects: #colorBall, #growPlanet">
+    </a-entity>
+</a-entity>
+    </a-scene>
+
+</body>
+</html>
